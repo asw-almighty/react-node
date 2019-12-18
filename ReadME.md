@@ -18,3 +18,11 @@
       filename: "./app-bundle.js"
     },
     ...
+
+##### 참고
+
+    git rm -r --cached node_modules
+    git commit -am "node_modules be gone!"
+    git push origin master
+
+이걸 하면 git에 올라간 node_modules를 제거할 수 있다.
