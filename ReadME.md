@@ -19,6 +19,8 @@
     },
     ...
 
+---
+
 ##### 참고
 
     git rm -r --cached node_modules
@@ -26,3 +28,28 @@
     git push origin master
 
 이걸 하면 git에 올라간 node_modules를 제거할 수 있다.
+
+---
+
+## Socket 연결
+
+#### App.tsx
+
+    import * as io from "socket.io-client";
+
+    export class Hello extends React.Component {
+        initSocket = () => {
+            const socket = io("http://localhost:3000");
+            socket.emit("hello");
+        };
+        componentDidMount() {
+            this.initSocket();
+
+#### server.js
+
+    const io = socketIO(server);
+    io.on("connection", socket => {
+        socket.on("hello", () => {
+            console.log("hi");
+        });
+    });
