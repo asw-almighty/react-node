@@ -1,10 +1,9 @@
 import React from "react";
-// import React = require("react");
 import io from "socket.io-client";
 import SelectBtn from "./SelectBtn";
-import PdfContainer from "./PdfContainer";
+import PdfBtn from "./PdfBtn";
 import Canvas from "./Canvas";
-import PaintContainer from "./PaintContainer";
+import PaintBtn from "./PaintBtn";
 
 class Print extends React.Component {
   initSocket = () => {
@@ -20,9 +19,9 @@ class Print extends React.Component {
     return (
       <>
         <SelectBtn />
-        <PdfContainer />
+        <PdfBtn />
         <Canvas />
-        <PaintContainer />
+        <PaintBtn />
       </>
     );
   }

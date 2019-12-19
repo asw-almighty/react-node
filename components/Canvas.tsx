@@ -1,18 +1,10 @@
 import React from "react";
-import CanvasPresenter from "./CanvasPresenter";
+import styled from "styled-components";
 
-// const Canvas = () => <div>hi</div>;
-class Canvas extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <>
-        <CanvasPresenter />
-      </>
-    );
-  }
-}
+const Board = styled.div`
+  color: gray;
+`;
+
+const Canvas = () => <Board>Canvas</Board>;
 
 export default Canvas;

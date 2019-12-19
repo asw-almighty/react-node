@@ -95,46 +95,28 @@
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var CanvasPresenter_1 = __importDefault(__webpack_require__(/*! ./CanvasPresenter */ "./components/CanvasPresenter.tsx"));
-// const Canvas = () => <div>hi</div>;
-var Canvas = /** @class */ (function (_super) {
-    __extends(Canvas, _super);
-    function Canvas(props) {
-        return _super.call(this, props) || this;
-    }
-    Canvas.prototype.render = function () {
-        return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(CanvasPresenter_1.default, null)));
-    };
-    return Canvas;
-}(react_1.default.Component));
+var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
+var Board = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: gray;\n"], ["\n  color: gray;\n"])));
+var Canvas = function () { return react_1.default.createElement(Board, null, "Canvas"); };
 exports.default = Canvas;
+var templateObject_1;
 
 
 /***/ }),
 
-/***/ "./components/CanvasPresenter.tsx":
-/*!****************************************!*\
-  !*** ./components/CanvasPresenter.tsx ***!
-  \****************************************/
+/***/ "./components/PaintBtn.tsx":
+/*!*********************************!*\
+  !*** ./components/PaintBtn.tsx ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -150,51 +132,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var MyComponent = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  width: 100%;\n  color: red;\n"], ["\n  width: 100%;\n  color: red;\n"])));
-var CanvasPresenter = function () { return (react_1.default.createElement(MyComponent, null,
-    react_1.default.createElement("div", null, "hi"))); };
-exports.default = CanvasPresenter;
+var Paint = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: yellow;\n"], ["\n  color: yellow;\n"])));
+var PaintBtn = function () { return react_1.default.createElement(Paint, null, " Paint"); };
+exports.default = PaintBtn;
 var templateObject_1;
 
 
 /***/ }),
 
-/***/ "./components/PaintContainer.tsx":
-/*!***************************************!*\
-  !*** ./components/PaintContainer.tsx ***!
-  \***************************************/
+/***/ "./components/PdfBtn.tsx":
+/*!*******************************!*\
+  !*** ./components/PdfBtn.tsx ***!
+  \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var PaintContainer = function () { return react_1.default.createElement("div", null, "hi"); };
-exports.default = PaintContainer;
-
-
-/***/ }),
-
-/***/ "./components/PdfContainer.tsx":
-/*!*************************************!*\
-  !*** ./components/PdfContainer.tsx ***!
-  \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var PdfContainer = function () { return react_1.default.createElement("div", null, "hi"); };
-exports.default = PdfContainer;
+var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
+var Pdf = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: blue;\n"], ["\n  color: blue;\n"])));
+var PdfBtn = function () { return react_1.default.createElement(Pdf, null, "Pdf"); };
+exports.default = PdfBtn;
+var templateObject_1;
 
 
 /***/ }),
@@ -226,12 +194,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-// import React = require("react");
 var socket_io_client_1 = __importDefault(__webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js"));
 var SelectBtn_1 = __importDefault(__webpack_require__(/*! ./SelectBtn */ "./components/SelectBtn.tsx"));
-var PdfContainer_1 = __importDefault(__webpack_require__(/*! ./PdfContainer */ "./components/PdfContainer.tsx"));
+var PdfBtn_1 = __importDefault(__webpack_require__(/*! ./PdfBtn */ "./components/PdfBtn.tsx"));
 var Canvas_1 = __importDefault(__webpack_require__(/*! ./Canvas */ "./components/Canvas.tsx"));
-var PaintContainer_1 = __importDefault(__webpack_require__(/*! ./PaintContainer */ "./components/PaintContainer.tsx"));
+var PaintBtn_1 = __importDefault(__webpack_require__(/*! ./PaintBtn */ "./components/PaintBtn.tsx"));
 var Print = /** @class */ (function (_super) {
     __extends(Print, _super);
     function Print() {
@@ -248,9 +215,9 @@ var Print = /** @class */ (function (_super) {
     Print.prototype.render = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(SelectBtn_1.default, null),
-            react_1.default.createElement(PdfContainer_1.default, null),
+            react_1.default.createElement(PdfBtn_1.default, null),
             react_1.default.createElement(Canvas_1.default, null),
-            react_1.default.createElement(PaintContainer_1.default, null)));
+            react_1.default.createElement(PaintBtn_1.default, null)));
     };
     return Print;
 }(react_1.default.Component));
@@ -268,13 +235,20 @@ exports.default = Print;
 
 "use strict";
 
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var SelectBtn = function () { return react_1.default.createElement("div", null, "hi"); };
+var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
+var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: red;\n"], ["\n  color: red;\n"])));
+var SelectBtn = function () { return react_1.default.createElement(Select, null, "Select"); };
 exports.default = SelectBtn;
+var templateObject_1;
 
 
 /***/ }),
