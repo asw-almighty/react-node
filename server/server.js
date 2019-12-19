@@ -18,7 +18,5 @@ const server = app.listen(PORT, function() {
 
 const io = socketIO(server);
 io.on("connection", socket => {
-  socket.on("hello", () => {
-    console.log("hi");
-  });
+  socket.on("connected", ({ message }) => console.log(`somebody ${message}`));
 });

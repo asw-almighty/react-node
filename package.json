@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack-cli app.tsx --config webpack-config.js",
-    "start": "npm run build && cd server && nodemon --exec babel-node server.js --delay 2"
+    "dev:build": "webpack-cli index.tsx --config webpack-config.js --watch",
+    "dev:server": "cd server && nodemon --exec babel-node server.js --delay 2"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@babel/node": "^7.7.4",
+    "@types/jest": "^24.0.24",
+    "@types/react": "^16.9.16",
+    "@types/react-dom": "^16.9.4",
+    "@types/styled-components": "^4.4.1",
     "express": "^4.17.1",
     "morgan": "^1.9.1",
     "path": "^0.12.7",
@@ -19,6 +23,7 @@
     "react-dom": "^16.12.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "styled-components": "^4.4.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.3",
     "webpack": "^4.41.3",
