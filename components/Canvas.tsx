@@ -1,6 +1,34 @@
 import React, { useEffect, useContext, createContext } from "react";
 import styled from "styled-components";
 
+//style
+const Select = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 20px 5px;
+`;
+const SelectBtn = styled.button`
+  display: ${props => (props.id === "reset-all" ? "none" : "inline")};
+  cursor: pointer;
+`;
+const Input = styled.input`
+  display: none;
+`;
+const PdfMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+const PdfZoom = styled.div``;
+const PdfPage = styled.div`
+  width: 30%;
+  text-align: center;
+`;
+const PageNum = styled.span``;
+const PdfMove = styled.div``;
+const Btn = styled.button`
+  cursor: pointer;
+`;
 const Board = styled.canvas`
   background-color: white;
   width: 700px;
@@ -19,6 +47,7 @@ const Controls = styled.div`
 `;
 const PaintItems = styled.div``;
 
+//logic
 const stroke = (canvas, ctx) => {
   let painting = false;
 
@@ -75,12 +104,14 @@ const colorChange = (colors, ctx) => {
 };
 
 const Canvas = () => {
-  const myCanvas: React.RefObject<HTMLCanvasElement> = React.useRef();
+  let myCanvas: React.RefObject<HTMLCanvasElement> = React.useRef();
+  let myColors: React.RefObject<HTMLDivElement> = React.createRef();
 
   useEffect(() => {
     if (!myCanvas.current) {
       return;
     }
+    console.log(myColors);
     const canvas: HTMLCanvasElement = myCanvas.current;
     const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
     const colors: NodeListOf<ChildNode> =
@@ -88,9 +119,35 @@ const Canvas = () => {
 
     stroke(canvas, ctx);
     colorChange(colors, ctx);
-  });
+  }, []);
   return (
     <>
+      <Select id="selectPdf" ref={myColors}>
+        <Select>
+          <SelectBtn id="upload-button">Select PDF</SelectBtn>
+          <Input id="file-to-upload" type="file" accept="application/pdf" />
+        </Select>
+        <Select>
+          <SelectBtn id="reset-all">Reset Board</SelectBtn>
+          <SelectBtn id="erase-paint">Erase Paint</SelectBtn>
+        </Select>
+      </Select>
+      <PdfMeta>
+        <PdfZoom>
+          <Btn id="pdf-zoomOut">➖</Btn>
+          <Btn id="pdf-zoomIn">➕</Btn>
+        </PdfZoom>
+        <PdfPage>
+          Page{"   "}
+          <PageNum id="pdf-current-page">1</PageNum>
+          {"   "}of {"   "}
+          <PageNum id="pdf-total-pages">12</PageNum>
+        </PdfPage>
+        <PdfMove>
+          <Btn id="pdf-prev">⬅</Btn>
+          <Btn id="pdf-next">➡️</Btn>
+        </PdfMove>
+      </PdfMeta>
       <Board ref={myCanvas} />
       <PaintItems>
         <Controls>

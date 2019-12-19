@@ -1,7 +1,5 @@
 import React from "react";
 import io from "socket.io-client";
-import SelectBtn from "./SelectBtn";
-import PdfBtn from "./PdfBtn";
 import Canvas from "./Canvas";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
@@ -33,8 +31,6 @@ class Print extends React.Component {
     return (
       <>
         <GlobalStyle />
-        <SelectBtn />
-        <PdfBtn />
         <Canvas />
       </>
     );

@@ -112,10 +112,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Board = styled_components_1.default.canvas(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"], ["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"])));
-var Color = styled_components_1.default.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"], ["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"])), function (props) { return props.id; });
-var Controls = styled_components_1.default.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n"], ["\n  display: flex;\n  justify-content: center;\n"])));
-var PaintItems = styled_components_1.default.div(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
+//style
+var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"], ["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"])));
+var SelectBtn = styled_components_1.default.button(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  display: ", ";\n  cursor: pointer;\n"], ["\n  display: ", ";\n  cursor: pointer;\n"])), function (props) { return (props.id === "reset-all" ? "none" : "inline"); });
+var Input = styled_components_1.default.input(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  display: none;\n"], ["\n  display: none;\n"])));
+var PdfMeta = styled_components_1.default.div(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n"], ["\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n"])));
+var PdfZoom = styled_components_1.default.div(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
+var PdfPage = styled_components_1.default.div(templateObject_6 || (templateObject_6 = __makeTemplateObject(["\n  width: 30%;\n  text-align: center;\n"], ["\n  width: 30%;\n  text-align: center;\n"])));
+var PageNum = styled_components_1.default.span(templateObject_7 || (templateObject_7 = __makeTemplateObject([""], [""])));
+var PdfMove = styled_components_1.default.div(templateObject_8 || (templateObject_8 = __makeTemplateObject([""], [""])));
+var Btn = styled_components_1.default.button(templateObject_9 || (templateObject_9 = __makeTemplateObject(["\n  cursor: pointer;\n"], ["\n  cursor: pointer;\n"])));
+var Board = styled_components_1.default.canvas(templateObject_10 || (templateObject_10 = __makeTemplateObject(["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"], ["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"])));
+var Color = styled_components_1.default.div(templateObject_11 || (templateObject_11 = __makeTemplateObject(["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"], ["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"])), function (props) { return props.id; });
+var Controls = styled_components_1.default.div(templateObject_12 || (templateObject_12 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n"], ["\n  display: flex;\n  justify-content: center;\n"])));
+var PaintItems = styled_components_1.default.div(templateObject_13 || (templateObject_13 = __makeTemplateObject([""], [""])));
+//logic
 var stroke = function (canvas, ctx) {
     var painting = false;
     var INITIAL_WIDTH = 700;
@@ -164,17 +175,41 @@ var colorChange = function (colors, ctx) {
 };
 var Canvas = function () {
     var myCanvas = react_1.default.useRef();
+    var myColors = react_1.default.createRef();
     react_1.useEffect(function () {
         if (!myCanvas.current) {
             return;
         }
+        console.log(myColors);
         var canvas = myCanvas.current;
         var ctx = canvas.getContext("2d");
         var colors = myCanvas.current.nextElementSibling.childNodes[0].childNodes;
         stroke(canvas, ctx);
         colorChange(colors, ctx);
-    });
+    }, []);
     return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(Select, { id: "selectPdf", ref: myColors },
+            react_1.default.createElement(Select, null,
+                react_1.default.createElement(SelectBtn, { id: "upload-button" }, "Select PDF"),
+                react_1.default.createElement(Input, { id: "file-to-upload", type: "file", accept: "application/pdf" })),
+            react_1.default.createElement(Select, null,
+                react_1.default.createElement(SelectBtn, { id: "reset-all" }, "Reset Board"),
+                react_1.default.createElement(SelectBtn, { id: "erase-paint" }, "Erase Paint"))),
+        react_1.default.createElement(PdfMeta, null,
+            react_1.default.createElement(PdfZoom, null,
+                react_1.default.createElement(Btn, { id: "pdf-zoomOut" }, "\u2796"),
+                react_1.default.createElement(Btn, { id: "pdf-zoomIn" }, "\u2795")),
+            react_1.default.createElement(PdfPage, null,
+                "Page",
+                "   ",
+                react_1.default.createElement(PageNum, { id: "pdf-current-page" }, "1"),
+                "   ",
+                "of ",
+                "   ",
+                react_1.default.createElement(PageNum, { id: "pdf-total-pages" }, "12")),
+            react_1.default.createElement(PdfMove, null,
+                react_1.default.createElement(Btn, { id: "pdf-prev" }, "\u2B05"),
+                react_1.default.createElement(Btn, { id: "pdf-next" }, "\u27A1\uFE0F"))),
         react_1.default.createElement(Board, { ref: myCanvas }),
         react_1.default.createElement(PaintItems, null,
             react_1.default.createElement(Controls, null,
@@ -184,53 +219,7 @@ var Canvas = function () {
                 react_1.default.createElement(Color, { id: "blue" })))));
 };
 exports.default = Canvas;
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
-
-
-/***/ }),
-
-/***/ "./components/PdfBtn.tsx":
-/*!*******************************!*\
-  !*** ./components/PdfBtn.tsx ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var PdfMeta = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: none;\n  justify-content: space-between;\n  align-items: center;\n"], ["\n  display: none;\n  justify-content: space-between;\n  align-items: center;\n"])));
-var PdfZoom = styled_components_1.default.div(templateObject_2 || (templateObject_2 = __makeTemplateObject([""], [""])));
-var PdfPage = styled_components_1.default.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  width: 30%;\n  text-align: center;\n"], ["\n  width: 30%;\n  text-align: center;\n"])));
-var PageNum = styled_components_1.default.span(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
-var PdfMove = styled_components_1.default.div(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
-var Btn = styled_components_1.default.button(templateObject_6 || (templateObject_6 = __makeTemplateObject(["\n  cursor: pointer;\n"], ["\n  cursor: pointer;\n"])));
-var PdfBtn = function () { return (react_1.default.createElement(PdfMeta, null,
-    react_1.default.createElement(PdfZoom, null,
-        react_1.default.createElement(Btn, { id: "pdf-zoomOut" }, "\u2796"),
-        react_1.default.createElement(Btn, { id: "pdf-zoomIn" }, "\u2795")),
-    react_1.default.createElement(PdfPage, null,
-        "Page",
-        "   ",
-        react_1.default.createElement(PageNum, { id: "pdf-current-page" }, "1"),
-        "   ",
-        "of ",
-        "   ",
-        react_1.default.createElement(PageNum, { id: "pdf-total-pages" }, "12")),
-    react_1.default.createElement(PdfMove, null,
-        react_1.default.createElement(Btn, { id: "pdf-prev" }, "\u2B05"),
-        react_1.default.createElement(Btn, { id: "pdf-next" }, "\u27A1\uFE0F")))); };
-exports.default = PdfBtn;
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13;
 
 
 /***/ }),
@@ -267,8 +256,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var socket_io_client_1 = __importDefault(__webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js"));
-var SelectBtn_1 = __importDefault(__webpack_require__(/*! ./SelectBtn */ "./components/SelectBtn.tsx"));
-var PdfBtn_1 = __importDefault(__webpack_require__(/*! ./PdfBtn */ "./components/PdfBtn.tsx"));
 var Canvas_1 = __importDefault(__webpack_require__(/*! ./Canvas */ "./components/Canvas.tsx"));
 var styled_components_1 = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
 var styled_reset_1 = __importDefault(__webpack_require__(/*! styled-reset */ "./node_modules/styled-reset/lib/index.js"));
@@ -289,49 +276,12 @@ var Print = /** @class */ (function (_super) {
     Print.prototype.render = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(GlobalStyle, null),
-            react_1.default.createElement(SelectBtn_1.default, null),
-            react_1.default.createElement(PdfBtn_1.default, null),
             react_1.default.createElement(Canvas_1.default, null)));
     };
     return Print;
 }(react_1.default.Component));
 exports.default = Print;
 var templateObject_1;
-
-
-/***/ }),
-
-/***/ "./components/SelectBtn.tsx":
-/*!**********************************!*\
-  !*** ./components/SelectBtn.tsx ***!
-  \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"], ["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"])));
-var Btn = styled_components_1.default.button(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  display: ", ";\n  cursor: pointer;\n"], ["\n  display: ", ";\n  cursor: pointer;\n"])), function (props) { return (props.id === "reset-all" ? "none" : "inline"); });
-var Input = styled_components_1.default.input(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  display: none;\n"], ["\n  display: none;\n"])));
-var SelectBtn = function () { return (react_1.default.createElement(Select, { id: "selectPdf" },
-    react_1.default.createElement(Select, null,
-        react_1.default.createElement(Btn, { id: "upload-button" }, "Select PDF"),
-        react_1.default.createElement(Input, { id: "file-to-upload", type: "file", accept: "application/pdf" })),
-    react_1.default.createElement(Select, null,
-        react_1.default.createElement(Btn, { id: "reset-all" }, "Reset Board"),
-        react_1.default.createElement(Btn, { id: "erase-paint" }, "Erase Paint")))); };
-exports.default = SelectBtn;
-var templateObject_1, templateObject_2, templateObject_3;
 
 
 /***/ }),
