@@ -99,43 +99,92 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Board = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: gray;\n"], ["\n  color: gray;\n"])));
-var Canvas = function () { return react_1.default.createElement(Board, null, "Canvas"); };
+var Board = styled_components_1.default.canvas(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"], ["\n  background-color: white;\n  width: 700px;\n  height: 700px;\n"])));
+var Color = styled_components_1.default.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"], ["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"])), function (props) { return props.id; });
+var Controls = styled_components_1.default.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n"], ["\n  display: flex;\n  justify-content: center;\n"])));
+var PaintItems = styled_components_1.default.div(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
+var stroke = function (canvas, ctx) {
+    var painting = false;
+    var INITIAL_WIDTH = 700;
+    var INITIAL_HEIGHT = 700;
+    canvas.width = INITIAL_WIDTH;
+    canvas.height = INITIAL_HEIGHT;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2.5;
+    var beginPath = function (x, y) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    };
+    var strokePath = function (x, y) {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    };
+    function onMouseMove(event) {
+        var x = event.offsetX;
+        var y = event.offsetY;
+        if (!painting) {
+            beginPath(x, y);
+        }
+        else {
+            strokePath(x, y);
+        }
+    }
+    function startPainting() {
+        painting = true;
+    }
+    function stopPainting() {
+        painting = false;
+    }
+    if (canvas) {
+        canvas.addEventListener("mousemove", onMouseMove);
+        canvas.addEventListener("mouseup", stopPainting);
+        canvas.addEventListener("mousedown", startPainting);
+    }
+};
+var colorChange = function (colors, ctx) {
+    function handleColor(event) {
+        var color = event.target.id;
+        ctx.strokeStyle = color;
+    }
+    colors.forEach(function (color) { return color.addEventListener("click", handleColor); });
+};
+var Canvas = function () {
+    var myCanvas = react_1.default.useRef();
+    react_1.useEffect(function () {
+        if (!myCanvas.current) {
+            return;
+        }
+        var canvas = myCanvas.current;
+        var ctx = canvas.getContext("2d");
+        var colors = myCanvas.current.nextElementSibling.childNodes[0].childNodes;
+        stroke(canvas, ctx);
+        colorChange(colors, ctx);
+    });
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(Board, { ref: myCanvas }),
+        react_1.default.createElement(PaintItems, null,
+            react_1.default.createElement(Controls, null,
+                react_1.default.createElement(Color, { id: "black" }),
+                react_1.default.createElement(Color, { id: "white" }),
+                react_1.default.createElement(Color, { id: "red" }),
+                react_1.default.createElement(Color, { id: "blue" })))));
+};
 exports.default = Canvas;
-var templateObject_1;
-
-
-/***/ }),
-
-/***/ "./components/PaintBtn.tsx":
-/*!*********************************!*\
-  !*** ./components/PaintBtn.tsx ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Paint = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: yellow;\n"], ["\n  color: yellow;\n"])));
-var PaintBtn = function () { return react_1.default.createElement(Paint, null, " Paint"); };
-exports.default = PaintBtn;
-var templateObject_1;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
 
 
 /***/ }),
@@ -159,10 +208,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Pdf = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: blue;\n"], ["\n  color: blue;\n"])));
-var PdfBtn = function () { return react_1.default.createElement(Pdf, null, "Pdf"); };
+var PdfMeta = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: none;\n  justify-content: space-between;\n  align-items: center;\n"], ["\n  display: none;\n  justify-content: space-between;\n  align-items: center;\n"])));
+var PdfZoom = styled_components_1.default.div(templateObject_2 || (templateObject_2 = __makeTemplateObject([""], [""])));
+var PdfPage = styled_components_1.default.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  width: 30%;\n  text-align: center;\n"], ["\n  width: 30%;\n  text-align: center;\n"])));
+var PageNum = styled_components_1.default.span(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
+var PdfMove = styled_components_1.default.div(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
+var Btn = styled_components_1.default.button(templateObject_6 || (templateObject_6 = __makeTemplateObject(["\n  cursor: pointer;\n"], ["\n  cursor: pointer;\n"])));
+var PdfBtn = function () { return (react_1.default.createElement(PdfMeta, null,
+    react_1.default.createElement(PdfZoom, null,
+        react_1.default.createElement(Btn, { id: "pdf-zoomOut" }, "\u2796"),
+        react_1.default.createElement(Btn, { id: "pdf-zoomIn" }, "\u2795")),
+    react_1.default.createElement(PdfPage, null,
+        "Page",
+        "   ",
+        react_1.default.createElement(PageNum, { id: "pdf-current-page" }, "1"),
+        "   ",
+        "of ",
+        "   ",
+        react_1.default.createElement(PageNum, { id: "pdf-total-pages" }, "12")),
+    react_1.default.createElement(PdfMove, null,
+        react_1.default.createElement(Btn, { id: "pdf-prev" }, "\u2B05"),
+        react_1.default.createElement(Btn, { id: "pdf-next" }, "\u27A1\uFE0F")))); };
 exports.default = PdfBtn;
-var templateObject_1;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6;
 
 
 /***/ }),
@@ -176,6 +244,10 @@ var templateObject_1;
 
 "use strict";
 
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -198,11 +270,13 @@ var socket_io_client_1 = __importDefault(__webpack_require__(/*! socket.io-clien
 var SelectBtn_1 = __importDefault(__webpack_require__(/*! ./SelectBtn */ "./components/SelectBtn.tsx"));
 var PdfBtn_1 = __importDefault(__webpack_require__(/*! ./PdfBtn */ "./components/PdfBtn.tsx"));
 var Canvas_1 = __importDefault(__webpack_require__(/*! ./Canvas */ "./components/Canvas.tsx"));
-var PaintBtn_1 = __importDefault(__webpack_require__(/*! ./PaintBtn */ "./components/PaintBtn.tsx"));
+var styled_components_1 = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+var styled_reset_1 = __importDefault(__webpack_require__(/*! styled-reset */ "./node_modules/styled-reset/lib/index.js"));
+var GlobalStyle = styled_components_1.createGlobalStyle(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  ", "\n  body{\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n    background-color: #bdc3c7;\n    display:flex;\n    justify-content: center;\n  }\n"], ["\n  ", "\n  body{\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n    background-color: #bdc3c7;\n    display:flex;\n    justify-content: center;\n  }\n"])), styled_reset_1.default);
 var Print = /** @class */ (function (_super) {
     __extends(Print, _super);
-    function Print() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Print(props) {
+        var _this = _super.call(this, props) || this;
         _this.initSocket = function () {
             var socket = socket_io_client_1.default("http://localhost:3000");
             socket.emit("connected", { message: "connected" });
@@ -214,14 +288,15 @@ var Print = /** @class */ (function (_super) {
     };
     Print.prototype.render = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(GlobalStyle, null),
             react_1.default.createElement(SelectBtn_1.default, null),
             react_1.default.createElement(PdfBtn_1.default, null),
-            react_1.default.createElement(Canvas_1.default, null),
-            react_1.default.createElement(PaintBtn_1.default, null)));
+            react_1.default.createElement(Canvas_1.default, null)));
     };
     return Print;
 }(react_1.default.Component));
 exports.default = Print;
+var templateObject_1;
 
 
 /***/ }),
@@ -245,10 +320,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
-var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  color: red;\n"], ["\n  color: red;\n"])));
-var SelectBtn = function () { return react_1.default.createElement(Select, null, "Select"); };
+var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"], ["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"])));
+var Btn = styled_components_1.default.button(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  display: ", ";\n  cursor: pointer;\n"], ["\n  display: ", ";\n  cursor: pointer;\n"])), function (props) { return (props.id === "reset-all" ? "none" : "inline"); });
+var Input = styled_components_1.default.input(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  display: none;\n"], ["\n  display: none;\n"])));
+var SelectBtn = function () { return (react_1.default.createElement(Select, { id: "selectPdf" },
+    react_1.default.createElement(Select, null,
+        react_1.default.createElement(Btn, { id: "upload-button" }, "Select PDF"),
+        react_1.default.createElement(Input, { id: "file-to-upload", type: "file", accept: "application/pdf" })),
+    react_1.default.createElement(Select, null,
+        react_1.default.createElement(Btn, { id: "reset-all" }, "Reset Board"),
+        react_1.default.createElement(Btn, { id: "erase-paint" }, "Erase Paint")))); };
 exports.default = SelectBtn;
-var templateObject_1;
+var templateObject_1, templateObject_2, templateObject_3;
 
 
 /***/ }),
@@ -968,7 +1051,7 @@ module.exports = (function() {
 
 var base64 = __webpack_require__(/*! base64-js */ "./node_modules/base64-js/index.js")
 var ieee754 = __webpack_require__(/*! ieee754 */ "./node_modules/ieee754/index.js")
-var isArray = __webpack_require__(/*! isarray */ "./node_modules/buffer/node_modules/isarray/index.js")
+var isArray = __webpack_require__(/*! isarray */ "./node_modules/isarray/index.js")
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -2747,22 +2830,6 @@ function isnan (val) {
 }
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "./node_modules/buffer/node_modules/isarray/index.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/buffer/node_modules/isarray/index.js ***!
-  \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
 
 /***/ }),
 
@@ -6903,7 +6970,7 @@ module.exports = {
  * Module requirements.
  */
 
-var isArray = __webpack_require__(/*! isarray */ "./node_modules/isarray/index.js");
+var isArray = __webpack_require__(/*! isarray */ "./node_modules/has-binary2/node_modules/isarray/index.js");
 
 var toString = Object.prototype.toString;
 var withNativeBlob = typeof Blob === 'function' ||
@@ -6963,6 +7030,22 @@ function hasBinary (obj) {
 }
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../buffer/index.js */ "./node_modules/buffer/index.js").Buffer))
+
+/***/ }),
+
+/***/ "./node_modules/has-binary2/node_modules/isarray/index.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/has-binary2/node_modules/isarray/index.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
 
 /***/ }),
 
@@ -7561,6 +7644,169 @@ function concatArrays(originVal, newVal) {
 
 /* harmony default export */ __webpack_exports__["default"] = (merge);
 
+
+
+/***/ }),
+
+/***/ "./node_modules/ms/index.js":
+/*!**********************************!*\
+  !*** ./node_modules/ms/index.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isNaN(val) === false) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  if (ms >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (ms >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (ms >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (ms >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  return plural(ms, d, 'day') ||
+    plural(ms, h, 'hour') ||
+    plural(ms, m, 'minute') ||
+    plural(ms, s, 'second') ||
+    ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, n, name) {
+  if (ms < n) {
+    return;
+  }
+  if (ms < n * 1.5) {
+    return Math.floor(ms / n) + ' ' + name;
+  }
+  return Math.ceil(ms / n) + ' ' + name + 's';
+}
 
 
 /***/ }),
@@ -40591,7 +40837,7 @@ if (false) {} else {
  */
 
 var url = __webpack_require__(/*! ./url */ "./node_modules/socket.io-client/lib/url.js");
-var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-client/node_modules/socket.io-parser/index.js");
+var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-parser/index.js");
 var Manager = __webpack_require__(/*! ./manager */ "./node_modules/socket.io-client/lib/manager.js");
 var debug = __webpack_require__(/*! debug */ "./node_modules/socket.io-client/node_modules/debug/src/browser.js")('socket.io-client');
 
@@ -40698,7 +40944,7 @@ exports.Socket = __webpack_require__(/*! ./socket */ "./node_modules/socket.io-c
 var eio = __webpack_require__(/*! engine.io-client */ "./node_modules/engine.io-client/lib/index.js");
 var Socket = __webpack_require__(/*! ./socket */ "./node_modules/socket.io-client/lib/socket.js");
 var Emitter = __webpack_require__(/*! component-emitter */ "./node_modules/component-emitter/index.js");
-var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-client/node_modules/socket.io-parser/index.js");
+var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-parser/index.js");
 var on = __webpack_require__(/*! ./on */ "./node_modules/socket.io-client/lib/on.js");
 var bind = __webpack_require__(/*! component-bind */ "./node_modules/component-bind/index.js");
 var debug = __webpack_require__(/*! debug */ "./node_modules/socket.io-client/node_modules/debug/src/browser.js")('socket.io-client:manager');
@@ -41314,7 +41560,7 @@ function on (obj, ev, fn) {
  * Module dependencies.
  */
 
-var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-client/node_modules/socket.io-parser/index.js");
+var parser = __webpack_require__(/*! socket.io-parser */ "./node_modules/socket.io-parser/index.js");
 var Emitter = __webpack_require__(/*! component-emitter */ "./node_modules/component-emitter/index.js");
 var toArray = __webpack_require__(/*! to-array */ "./node_modules/to-array/index.js");
 var on = __webpack_require__(/*! ./on */ "./node_modules/socket.io-client/lib/on.js");
@@ -42563,10 +42809,10 @@ function plural(ms, msAbs, n, name) {
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/binary.js":
-/*!*******************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/binary.js ***!
-  \*******************************************************************************/
+/***/ "./node_modules/socket.io-parser/binary.js":
+/*!*************************************************!*\
+  !*** ./node_modules/socket.io-parser/binary.js ***!
+  \*************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42576,8 +42822,8 @@ function plural(ms, msAbs, n, name) {
  * Module requirements
  */
 
-var isArray = __webpack_require__(/*! isarray */ "./node_modules/isarray/index.js");
-var isBuf = __webpack_require__(/*! ./is-buffer */ "./node_modules/socket.io-client/node_modules/socket.io-parser/is-buffer.js");
+var isArray = __webpack_require__(/*! isarray */ "./node_modules/socket.io-parser/node_modules/isarray/index.js");
+var isBuf = __webpack_require__(/*! ./is-buffer */ "./node_modules/socket.io-parser/is-buffer.js");
 var toString = Object.prototype.toString;
 var withNativeBlob = typeof Blob === 'function' || (typeof Blob !== 'undefined' && toString.call(Blob) === '[object BlobConstructor]');
 var withNativeFile = typeof File === 'function' || (typeof File !== 'undefined' && toString.call(File) === '[object FileConstructor]');
@@ -42715,10 +42961,10 @@ exports.removeBlobs = function(data, callback) {
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/index.js ***!
-  \******************************************************************************/
+/***/ "./node_modules/socket.io-parser/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/socket.io-parser/index.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42727,11 +42973,11 @@ exports.removeBlobs = function(data, callback) {
  * Module dependencies.
  */
 
-var debug = __webpack_require__(/*! debug */ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/browser.js")('socket.io-parser');
+var debug = __webpack_require__(/*! debug */ "./node_modules/socket.io-parser/node_modules/debug/src/browser.js")('socket.io-parser');
 var Emitter = __webpack_require__(/*! component-emitter */ "./node_modules/component-emitter/index.js");
-var binary = __webpack_require__(/*! ./binary */ "./node_modules/socket.io-client/node_modules/socket.io-parser/binary.js");
-var isArray = __webpack_require__(/*! isarray */ "./node_modules/isarray/index.js");
-var isBuf = __webpack_require__(/*! ./is-buffer */ "./node_modules/socket.io-client/node_modules/socket.io-parser/is-buffer.js");
+var binary = __webpack_require__(/*! ./binary */ "./node_modules/socket.io-parser/binary.js");
+var isArray = __webpack_require__(/*! isarray */ "./node_modules/socket.io-parser/node_modules/isarray/index.js");
+var isBuf = __webpack_require__(/*! ./is-buffer */ "./node_modules/socket.io-parser/is-buffer.js");
 
 /**
  * Protocol version.
@@ -43141,10 +43387,10 @@ function error(msg) {
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/is-buffer.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/is-buffer.js ***!
-  \**********************************************************************************/
+/***/ "./node_modules/socket.io-parser/is-buffer.js":
+/*!****************************************************!*\
+  !*** ./node_modules/socket.io-parser/is-buffer.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -43169,14 +43415,14 @@ function isBuf(obj) {
           (withNativeArrayBuffer && (obj instanceof ArrayBuffer || isView(obj)));
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../buffer/index.js */ "./node_modules/buffer/index.js").Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../buffer/index.js */ "./node_modules/buffer/index.js").Buffer))
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/browser.js":
-/*!*******************************************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/browser.js ***!
-  \*******************************************************************************************************/
+/***/ "./node_modules/socket.io-parser/node_modules/debug/src/browser.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/socket.io-parser/node_modules/debug/src/browser.js ***!
+  \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -43186,7 +43432,7 @@ function isBuf(obj) {
  * Expose `debug()` as the module.
  */
 
-exports = module.exports = __webpack_require__(/*! ./debug */ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/debug.js");
+exports = module.exports = __webpack_require__(/*! ./debug */ "./node_modules/socket.io-parser/node_modules/debug/src/debug.js");
 exports.log = log;
 exports.formatArgs = formatArgs;
 exports.save = save;
@@ -43376,14 +43622,14 @@ function localstorage() {
   } catch (e) {}
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../process/browser.js */ "./node_modules/process/browser.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/debug.js":
-/*!*****************************************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/debug/src/debug.js ***!
-  \*****************************************************************************************************/
+/***/ "./node_modules/socket.io-parser/node_modules/debug/src/debug.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/socket.io-parser/node_modules/debug/src/debug.js ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -43400,7 +43646,7 @@ exports.coerce = coerce;
 exports.disable = disable;
 exports.enable = enable;
 exports.enabled = enabled;
-exports.humanize = __webpack_require__(/*! ms */ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/ms/index.js");
+exports.humanize = __webpack_require__(/*! ms */ "./node_modules/ms/index.js");
 
 /**
  * Active `debug` instances.
@@ -43616,165 +43862,18 @@ function coerce(val) {
 
 /***/ }),
 
-/***/ "./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/ms/index.js":
-/*!**********************************************************************************************!*\
-  !*** ./node_modules/socket.io-client/node_modules/socket.io-parser/node_modules/ms/index.js ***!
-  \**********************************************************************************************/
+/***/ "./node_modules/socket.io-parser/node_modules/isarray/index.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/socket.io-parser/node_modules/isarray/index.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-/**
- * Helpers.
- */
+var toString = {}.toString;
 
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-  throw new Error(
-    'val is not a non-empty string or a valid number. val=' +
-      JSON.stringify(val)
-  );
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
 };
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 100) {
-    return;
-  }
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
-    str
-  );
-  if (!match) {
-    return;
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  if (ms >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-  if (ms >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-  if (ms >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-  if (ms >= s) {
-    return Math.round(ms / s) + 's';
-  }
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  return plural(ms, d, 'day') ||
-    plural(ms, h, 'hour') ||
-    plural(ms, m, 'minute') ||
-    plural(ms, s, 'second') ||
-    ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, n, name) {
-  if (ms < n) {
-    return;
-  }
-  if (ms < n * 1.5) {
-    return Math.floor(ms / n) + ' ' + name;
-  }
-  return Math.ceil(ms / n) + ' ' + name + 's';
-}
 
 
 /***/ }),
@@ -46300,6 +46399,54 @@ if ( true && typeof window !== 'undefined' && typeof navigator !== 'undefined' &
 //# sourceMappingURL=styled-components.browser.esm.js.map
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "./node_modules/styled-reset/lib/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/styled-reset/lib/index.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = exports.Reset = exports.reset = void 0;
+
+var _styledComponents = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["", ""]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n/* http://meyerweb.com/eric/tools/css/reset/\n   v4.0 | 20180602\n   License: none (public domain)\n*/\n\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmain, menu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, main, menu, nav, section {\n  display: block;\n}\n/* HTML5 hidden-attribute fix for newer browsers */\n*[hidden] {\n    display: none;\n}\nbody {\n  line-height: 1;\n}\nol, ul {\n  list-style: none;\n}\nblockquote, q {\n  quotes: none;\n}\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var reset = (0, _styledComponents.css)(_templateObject());
+exports.reset = reset;
+var Reset = (0, _styledComponents.createGlobalStyle)(_templateObject2(), reset);
+exports.Reset = Reset;
+var _default = reset;
+exports["default"] = _default;
 
 /***/ }),
 
