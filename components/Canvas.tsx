@@ -1,6 +1,17 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import io from "socket.io-client";
+import PDFJS from "../static/pdf.js";
+import "../static/pdf.worker.js";
+
+let __PDF_DOC;
+let __CURRENT_PAGE;
+let __TOTAL_PAGES;
+let __PAGE_RENDERING_IN_PROGRESS = 0;
+let currentPage;
+let socket;
+let scaleToggle = false;
+let scale;
 
 //style
 const Select = styled.div`
@@ -16,7 +27,7 @@ const Input = styled.input`
   display: none;
 `;
 const PdfMeta = styled.div`
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
 `;
@@ -47,7 +58,7 @@ const Controls = styled.div`
   justify-content: center;
 `;
 const PaintItems = styled.div``;
-let socket = null;
+
 //logic
 const stroke = (canvas, ctx) => {
   let painting = false;
@@ -121,47 +132,134 @@ const initSocket = () => {
 };
 
 const Canvas = () => {
-  let myCanvas: React.RefObject<HTMLCanvasElement> = useRef();
-  let myColors: React.RefObject<HTMLDivElement> = useRef();
+  const myCanvas: React.RefObject<HTMLCanvasElement> = useRef();
+  const myColors: React.RefObject<HTMLDivElement> = useRef();
+  const myUpload: React.RefObject<HTMLInputElement> = useRef();
+  const myUploadBtn: React.RefObject<HTMLButtonElement> = useRef();
+  const pdfTotalPages: React.RefObject<HTMLDivElement> = useRef();
+  const pdfMeta: React.RefObject<HTMLDivElement> = useRef();
+  const clickReset: React.RefObject<HTMLButtonElement> = useRef();
+  const erasePaint: React.RefObject<HTMLButtonElement> = useRef();
+  const pdfPrev: React.RefObject<HTMLButtonElement> = useRef();
+  const pdfNext: React.RefObject<HTMLButtonElement> = useRef();
+  const pdfCurrent: React.RefObject<HTMLButtonElement> = useRef();
+
+  const pdfUpload = () => {
+    myUploadBtn.current.addEventListener("click", () => {
+      myUpload.current.click();
+    });
+  };
 
   useEffect(() => {
+    const ctx: CanvasRenderingContext2D = myCanvas.current.getContext("2d");
+
+    function showPDF(pdf_url) {
+      PDFJS.getDocument({ url: pdf_url })
+        .then(function(pdf_doc) {
+          __PDF_DOC = pdf_doc;
+          __TOTAL_PAGES = __PDF_DOC.numPages;
+          pdfTotalPages.current.innerHTML = __TOTAL_PAGES;
+
+          // Show the first page
+          showPage(1);
+          pdfMeta.current.style.display = "flex";
+          clickReset.current.style.display = "flex";
+        })
+        .catch(function(error) {
+          alert(error.message);
+        });
+    }
+    function showPage(page_no) {
+      __PAGE_RENDERING_IN_PROGRESS = 1;
+      __CURRENT_PAGE = page_no;
+      currentPage = page_no;
+      // Disable Prev & Next buttons while page is being loaded
+      // pdfNext.current.setAttribute("disabled", true);
+      // pdfPrev.current.setAttribute("disabled", true);
+
+      // Update current page in HTML
+      pdfCurrent.current.innerHTML = page_no;
+
+      // Fetch the page
+      __PDF_DOC.getPage(page_no).then(function(page) {
+        // As the canvas is of a fixed width we need to set the scale of the viewport accordingly
+        // var scale_required = __CANVAS.width / page.getViewport(1).width;
+
+        if (!scaleToggle) {
+          scale = 1;
+        }
+
+        // Get viewport of the page at required scale
+        // var viewport = page.getViewport(scale_required);
+        var viewport = page.getViewport(scale);
+
+        // Set canvas height
+        myCanvas.current.height = viewport.height > 700 ? 700 : viewport.height;
+        myCanvas.current.width = viewport.width > 700 ? 700 : viewport.width;
+        ctx.lineWidth = 2.5;
+
+        var renderContext = {
+          canvasContext: ctx,
+          viewport
+        };
+
+        // Render the page contents in the canvas
+        page.render(renderContext).then(function() {
+          __PAGE_RENDERING_IN_PROGRESS = 0;
+
+          // // Re-enable Prev & Next buttons
+          // pdfPrev.current.removeAttribute("disabled");
+          // pdfNext.current.removeAttribute("disabled");
+        });
+        // getImages(page);
+      });
+    }
+
+    myUpload.current.addEventListener("change", () => {
+      const pdfURL = URL.createObjectURL(myUpload.current.files[0]);
+      socket.emit("showPDF", { pdfURL });
+      showPDF(pdfURL);
+      myUpload.current.value = "";
+      pdfMeta.current.style.display = "flex";
+    });
+
     initSocket();
     if (!myCanvas.current) {
       return;
     }
-    const canvas: HTMLCanvasElement = myCanvas.current;
-    const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-    const colors: NodeListOf<ChildNode> = myColors.current.childNodes;
 
-    stroke(canvas, ctx);
-    colorChange(colors, ctx);
+    stroke(myCanvas.current, ctx);
+    colorChange(myColors.current.childNodes, ctx);
+    pdfUpload();
   }, []);
   return (
     <>
-      <Select id="selectPdf">
+      <Select>
         <Select>
-          <SelectBtn id="upload-button">Select PDF</SelectBtn>
-          <Input id="file-to-upload" type="file" accept="application/pdf" />
+          <SelectBtn ref={myUploadBtn}>Select PDF</SelectBtn>
+          <Input type="file" accept="application/pdf" ref={myUpload} />
         </Select>
         <Select>
-          <SelectBtn id="reset-all">Reset Board</SelectBtn>
-          <SelectBtn id="erase-paint">Erase Paint</SelectBtn>
+          <SelectBtn id="reset-all" ref={clickReset}>
+            Reset Board
+          </SelectBtn>
+          <SelectBtn ref={erasePaint}>Erase Paint</SelectBtn>
         </Select>
       </Select>
-      <PdfMeta>
+      <PdfMeta ref={pdfMeta}>
         <PdfZoom>
-          <Btn id="pdf-zoomOut">➖</Btn>
-          <Btn id="pdf-zoomIn">➕</Btn>
+          <Btn>➖</Btn>
+          <Btn>➕</Btn>
         </PdfZoom>
         <PdfPage>
           Page{"   "}
-          <PageNum id="pdf-current-page">1</PageNum>
+          <PageNum ref={pdfCurrent} />
           {"   "}of {"   "}
-          <PageNum id="pdf-total-pages">12</PageNum>
+          <PageNum ref={pdfTotalPages} />
         </PdfPage>
         <PdfMove>
-          <Btn id="pdf-prev">⬅</Btn>
-          <Btn id="pdf-next">➡️</Btn>
+          <Btn ref={pdfPrev}>⬅</Btn>
+          <Btn ref={pdfNext}>➡️</Btn>
         </PdfMove>
       </PdfMeta>
       <Board ref={myCanvas} />
