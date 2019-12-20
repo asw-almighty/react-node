@@ -19,4 +19,10 @@ const server = app.listen(PORT, function() {
 const io = socketIO(server);
 io.on("connection", socket => {
   socket.on("connected", ({ message }) => console.log(`somebody ${message}`));
+  socket.on("beginPath", ({ x, y }) => {
+    socket.broadcast.emit("beganPath", { x, y });
+  });
+  socket.on("strokePath", ({ x, y, color }) => {
+    socket.broadcast.emit("strokedPath", { x, y, color });
+  });
 });

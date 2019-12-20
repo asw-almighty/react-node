@@ -112,6 +112,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var styled_components_1 = __importDefault(__webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js"));
+var socket_io_client_1 = __importDefault(__webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js"));
 //style
 var Select = styled_components_1.default.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"], ["\n  display: flex;\n  justify-content: center;\n  margin: 20px 5px;\n"])));
 var SelectBtn = styled_components_1.default.button(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  display: ", ";\n  cursor: pointer;\n"], ["\n  display: ", ";\n  cursor: pointer;\n"])), function (props) { return (props.id === "reset-all" ? "none" : "inline"); });
@@ -126,6 +127,7 @@ var Board = styled_components_1.default.canvas(templateObject_10 || (templateObj
 var Color = styled_components_1.default.div(templateObject_11 || (templateObject_11 = __makeTemplateObject(["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"], ["\n  background-color: ", ";\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  cursor: pointer;\n"])), function (props) { return props.id; });
 var Controls = styled_components_1.default.div(templateObject_12 || (templateObject_12 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n"], ["\n  display: flex;\n  justify-content: center;\n"])));
 var PaintItems = styled_components_1.default.div(templateObject_13 || (templateObject_13 = __makeTemplateObject([""], [""])));
+var socket = null;
 //logic
 var stroke = function (canvas, ctx) {
     var painting = false;
@@ -149,11 +151,25 @@ var stroke = function (canvas, ctx) {
         var y = event.offsetY;
         if (!painting) {
             beginPath(x, y);
+            socket.emit("beginPath", { x: x, y: y });
         }
         else {
             strokePath(x, y);
+            socket.emit("strokePath", { x: x, y: y, color: ctx.strokeStyle });
         }
     }
+    socket.on("beganPath", function (_a) {
+        var x = _a.x, y = _a.y;
+        beginPath(x, y);
+    });
+    socket.on("strokedPath", function (_a) {
+        var x = _a.x, y = _a.y, color = _a.color;
+        var currentColor = ctx.strokeStyle;
+        if (color !== null)
+            ctx.strokeStyle = color;
+        strokePath(x, y);
+        ctx.strokeStyle = currentColor;
+    });
     function startPainting() {
         painting = true;
     }
@@ -173,22 +189,26 @@ var colorChange = function (colors, ctx) {
     }
     colors.forEach(function (color) { return color.addEventListener("click", handleColor); });
 };
+var initSocket = function () {
+    socket = socket_io_client_1.default("http://localhost:3000");
+    socket.emit("connected", { message: "hi" });
+};
 var Canvas = function () {
-    var myCanvas = react_1.default.useRef();
-    var myColors = react_1.default.createRef();
+    var myCanvas = react_1.useRef();
+    var myColors = react_1.useRef();
     react_1.useEffect(function () {
+        initSocket();
         if (!myCanvas.current) {
             return;
         }
-        console.log(myColors);
         var canvas = myCanvas.current;
         var ctx = canvas.getContext("2d");
-        var colors = myCanvas.current.nextElementSibling.childNodes[0].childNodes;
+        var colors = myColors.current.childNodes;
         stroke(canvas, ctx);
         colorChange(colors, ctx);
     }, []);
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(Select, { id: "selectPdf", ref: myColors },
+        react_1.default.createElement(Select, { id: "selectPdf" },
             react_1.default.createElement(Select, null,
                 react_1.default.createElement(SelectBtn, { id: "upload-button" }, "Select PDF"),
                 react_1.default.createElement(Input, { id: "file-to-upload", type: "file", accept: "application/pdf" })),
@@ -212,7 +232,7 @@ var Canvas = function () {
                 react_1.default.createElement(Btn, { id: "pdf-next" }, "\u27A1\uFE0F"))),
         react_1.default.createElement(Board, { ref: myCanvas }),
         react_1.default.createElement(PaintItems, null,
-            react_1.default.createElement(Controls, null,
+            react_1.default.createElement(Controls, { ref: myColors },
                 react_1.default.createElement(Color, { id: "black" }),
                 react_1.default.createElement(Color, { id: "white" }),
                 react_1.default.createElement(Color, { id: "red" }),
@@ -255,24 +275,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-var socket_io_client_1 = __importDefault(__webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js"));
 var Canvas_1 = __importDefault(__webpack_require__(/*! ./Canvas */ "./components/Canvas.tsx"));
 var styled_components_1 = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
 var styled_reset_1 = __importDefault(__webpack_require__(/*! styled-reset */ "./node_modules/styled-reset/lib/index.js"));
 var GlobalStyle = styled_components_1.createGlobalStyle(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  ", "\n  body{\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n    background-color: #bdc3c7;\n    display:flex;\n    justify-content: center;\n  }\n"], ["\n  ", "\n  body{\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n    background-color: #bdc3c7;\n    display:flex;\n    justify-content: center;\n  }\n"])), styled_reset_1.default);
 var Print = /** @class */ (function (_super) {
     __extends(Print, _super);
-    function Print(props) {
-        var _this = _super.call(this, props) || this;
-        _this.initSocket = function () {
-            var socket = socket_io_client_1.default("http://localhost:3000");
-            socket.emit("connected", { message: "connected" });
-        };
-        return _this;
+    function Print() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    Print.prototype.componentDidMount = function () {
-        this.initSocket();
-    };
     Print.prototype.render = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(GlobalStyle, null),

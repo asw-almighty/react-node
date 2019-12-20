@@ -1,5 +1,6 @@
-import React, { useEffect, useContext, createContext } from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
+import io from "socket.io-client";
 
 //style
 const Select = styled.div`
@@ -46,7 +47,7 @@ const Controls = styled.div`
   justify-content: center;
 `;
 const PaintItems = styled.div``;
-
+let socket = null;
 //logic
 const stroke = (canvas, ctx) => {
   let painting = false;
@@ -75,11 +76,22 @@ const stroke = (canvas, ctx) => {
 
     if (!painting) {
       beginPath(x, y);
+      socket.emit("beginPath", { x, y });
     } else {
       strokePath(x, y);
+      socket.emit("strokePath", { x, y, color: ctx.strokeStyle });
     }
   }
 
+  socket.on("beganPath", ({ x, y }) => {
+    beginPath(x, y);
+  });
+  socket.on("strokedPath", ({ x, y, color }) => {
+    let currentColor = ctx.strokeStyle;
+    if (color !== null) ctx.strokeStyle = color;
+    strokePath(x, y);
+    ctx.strokeStyle = currentColor;
+  });
   function startPainting() {
     painting = true;
   }
@@ -103,26 +115,30 @@ const colorChange = (colors, ctx) => {
   colors.forEach(color => color.addEventListener("click", handleColor));
 };
 
+const initSocket = () => {
+  socket = io("http://localhost:3000");
+  socket.emit("connected", { message: "hi" });
+};
+
 const Canvas = () => {
-  let myCanvas: React.RefObject<HTMLCanvasElement> = React.useRef();
-  let myColors: React.RefObject<HTMLDivElement> = React.createRef();
+  let myCanvas: React.RefObject<HTMLCanvasElement> = useRef();
+  let myColors: React.RefObject<HTMLDivElement> = useRef();
 
   useEffect(() => {
+    initSocket();
     if (!myCanvas.current) {
       return;
     }
-    console.log(myColors);
     const canvas: HTMLCanvasElement = myCanvas.current;
     const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-    const colors: NodeListOf<ChildNode> =
-      myCanvas.current.nextElementSibling.childNodes[0].childNodes;
+    const colors: NodeListOf<ChildNode> = myColors.current.childNodes;
 
     stroke(canvas, ctx);
     colorChange(colors, ctx);
   }, []);
   return (
     <>
-      <Select id="selectPdf" ref={myColors}>
+      <Select id="selectPdf">
         <Select>
           <SelectBtn id="upload-button">Select PDF</SelectBtn>
           <Input id="file-to-upload" type="file" accept="application/pdf" />
@@ -150,7 +166,7 @@ const Canvas = () => {
       </PdfMeta>
       <Board ref={myCanvas} />
       <PaintItems>
-        <Controls>
+        <Controls ref={myColors}>
           <Color id="black" />
           <Color id="white" />
           <Color id="red" />

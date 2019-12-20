@@ -1,5 +1,4 @@
 import React from "react";
-import io from "socket.io-client";
 import Canvas from "./Canvas";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
@@ -15,18 +14,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 class Print extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  initSocket = () => {
-    const socket = io("http://localhost:3000");
-    socket.emit("connected", { message: "connected" });
-  };
-
-  componentDidMount() {
-    this.initSocket();
-  }
-
   render() {
     return (
       <>
